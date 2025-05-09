@@ -1,0 +1,25 @@
+.edit-hod-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .text-purple {
+    color: #6f42c1;
+  }
+  
+  .btn-purple {
+    background-color: #6f42c1;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-purple:hover {
+    background-color: #59339c;
+  }
+  
+  @media (max-width: 576px) {
+    .edit-hod-wrapper {
+      padding: 1rem;
+    }
+  }
+  

@@ -1,0 +1,268 @@
+/* --- Theme Variables --- */
+:root {
+  --primary-purple: #7d4cae;
+  --secondary-purple: #462b61;
+  --light-purple: #e0c3fc;
+  --dark-purple: #4a1079;
+  --white: #ffffff;
+  --gray: #ebecec;
+  --text-dark: #121415;
+  --text-light: #f8f9fa;
+  --border: #c6d2de;
+}
+
+/* Dark Mode Overrides */
+body.dark-mode {
+  --gray: #121212;
+  --text-dark: #f8f9fa;
+  --white: #1f1f1f;
+  --border: #333;
+}
+
+/* --- Admin Container --- */
+.admin-container {
+  min-height: 100vh;
+  background-color: var(--gray);
+  color: var(--text-dark);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* --- Navbar --- */
+.admin-navbar {
+  background-color: var(--primary-purple);
+  height: 80px;
+  padding: 1rem 1.5rem;
+  color: var(--white);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo Image */
+.logo-img {
+  height: 60px;
+  width: auto;
+}
+
+/* Profile Image */
+.profile-img {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--white);
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  background-color: var(--dark-purple);
+  width: 220px;
+  min-height: 100vh;
+  padding: 1rem 0.75rem;
+  transition: transform 0.3s ease, width 0.3s ease;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sidebar button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  transition: background 0.2s ease, transform 0.2s ease;
+  border-radius: 6px;
+}
+
+.sidebar button:hover {
+  background-color: var(--secondary-purple);
+  transform: translateX(4px);
+}
+
+.sidebar.collapsed {
+  width: 60px;
+}
+
+.sidebar.collapsed button span {
+  display: none;
+}
+
+/* --- Main Layout --- */
+.admin-layout {
+  display: flex;
+  flex-direction: row;
+}
+
+.main-section {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-x: auto;
+  background-color: var(--gray);
+}
+
+/* --- Profile Dropdown --- */
+.profile-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background: var(--white);
+  color: var(--text-dark);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-width: 160px;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.profile-dropdown button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  color: inherit;
+  transition: background 0.2s ease;
+}
+
+.profile-dropdown button:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.dark-mode .profile-dropdown {
+  background: #1f1f1f;
+  color: var(--text-light);
+  border-color: var(--border);
+}
+
+.dark-mode .profile-dropdown button:hover {
+  background-color: #2c2c2c;
+}
+
+/* --- Responsive Mobile Sidebar --- */
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    top: 130px;
+    left: 0;
+    height: calc(100% - 80px);
+    transform: translateX(0);
+    width: 220px;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+  }
+
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-navbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+
+  .logo-img {
+    height: 50px;
+  }
+
+  .profile-img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* --- Table Styling --- */
+.table th,
+.table td {
+  white-space: nowrap;
+}
+
+.table thead {
+  background-color: var(--light-purple);
+  color: var(--dark-purple);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f9f5ff;
+}
+
+/* Dark Mode Table */
+.dark-mode .table {
+  color: var(--text-light);
+  background-color: #1c1c1c;
+}
+
+.dark-mode .table th,
+.dark-mode .table td {
+  color: var(--text-light);
+  background-color: #2c2c2c;
+}
+
+/* --- Edit Profile Modal Enhancements --- */
+.profile-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+}
+
+.edit-icon-overlay {
+  position: absolute;
+  bottom: 12px;
+  right: calc(50% - 50px);
+  background-color: var(--white);
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  transition: background-color 0.2s ease;
+}
+
+.edit-icon-overlay:hover {
+  background-color: #f1f1f1;
+}
+
+.edit-icon-overlay i {
+  font-size: 14px;
+  color: #333;
+}
+
+/* --- Buttons --- */
+.btn-success {
+  background-color: var(--primary-purple);
+  border-color: var(--primary-purple);
+  color: var(--white);
+}
+
+.btn-success:hover {
+  background-color: var(--dark-purple);
+  border-color: var(--dark-purple);
+}
+
+.btn-outline {
+  border: 1px solid var(--primary-purple);
+  color: var(--primary-purple);
+}
+
+.btn-outline:hover {
+  background-color: var(--primary-purple);
+  color: var(--white);
+}

@@ -1,0 +1,57 @@
+.login-container {
+  height: 100vh;
+  background: linear-gradient(to right, #8a85c4, #746faf); 
+}
+
+.login-form {
+  max-width: 400px;
+  width: 100%;
+}
+
+.text-purple {
+  color: #6f42c1;
+}
+
+.btn-purple {
+  background-color: #6f42c1;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.btn-purple:hover {
+  background-color: #59339c;
+}
+
+.logo-img {
+  max-width: 80%;
+  height: auto;
+}
+.login-container {
+    height: 100vh;
+    background: linear-gradient(to right, #f3f2ff, #e8e6ff);
+  }
+  
+  .login-form {
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  .text-purple {
+    color: #6f42c1;
+  }
+  
+  .btn-purple {
+    background-color: #6f42c1;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-purple:hover {
+    background-color: #59339c;
+  }
+  
+  .logo-img {
+    max-width: 89%;
+    height: auto;
+  }
+  

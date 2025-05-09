@@ -1,0 +1,151 @@
+.hod-view-container {
+  padding: 2rem;
+  background-color: #f8f4ff;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  color: #4b0082;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #6a0dad;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.back-button:hover {
+  color: #4b0082;
+  text-decoration: underline;
+}
+
+.heading {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #4b0082;
+  text-align: center;
+}
+
+.no-requests {
+  font-style: italic;
+  color: #888;
+  text-align: center;
+}
+
+.requests-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(106, 13, 173, 0.2);
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.requests-table th,
+.requests-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  word-wrap: break-word;
+}
+
+.requests-table th {
+  background-color: #e8d4f7;
+  color: #4b0082;
+}
+
+.requests-table tbody tr:hover {
+  background-color: #f3e8ff;
+}
+
+.animated-popup {
+  animation: fadeInUp 0.6s ease;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 🌐 Responsive Enhancements */
+@media (max-width: 768px) {
+  .hod-view-container {
+    padding: 1rem;
+  }
+
+  .heading {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .back-button {
+    font-size: 1rem;
+    display: block;
+    text-align: left;
+  }
+
+  .requests-table th,
+  .requests-table td {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .requests-table thead {
+    display: none;
+  }
+
+  .requests-table,
+  .requests-table tbody,
+  .requests-table tr,
+  .requests-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .requests-table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #fff;
+  }
+
+  .requests-table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  .requests-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: bold;
+    text-align: left;
+    color: #6a0dad;
+  }
+}

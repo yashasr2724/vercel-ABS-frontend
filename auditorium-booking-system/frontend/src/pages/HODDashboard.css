@@ -1,0 +1,44 @@
+/* Gradient Purple Background */
+.bg-purple {
+  background: linear-gradient(135deg, #6f42c1, #9b59b6);
+}
+
+/* Text Purple */
+.text-purple {
+  color: #6f42c1;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  min-height: 100%;
+  transition: all 0.4s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+  z-index: 5;
+}
+
+/* Hover effect for sidebar buttons */
+.sidebar button {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.sidebar button:hover {
+  background-color: #e0d1f6;
+  transform: translateY(-1px);
+}
+
+/* Responsive Sidebar on Small Devices */
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    top: 56px; /* height of navbar */
+    left: 0;
+    width: 100%;
+    z-index: 10;
+  }
+}
+
+/* Center content text enhancements */
+.text-muted {
+  font-size: 1rem;
+  opacity: 0.8;
+}

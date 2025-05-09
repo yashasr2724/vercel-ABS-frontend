@@ -1,0 +1,145 @@
+/* Gradient Purple Background */
+.bg-purple {
+  background: linear-gradient(135deg, #6f42c1, #9b59b6);
+}
+
+/* Text Purple */
+.text-purple {
+  color: #6f42c1;
+}
+
+/* Button Purple */
+.btn-purple {
+  background-color: #6f42c1;
+  color: white;
+}
+
+.btn-purple:hover {
+  background-color: #59309c;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  min-height: 100%;
+  transition: all 0.4s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+  z-index: 5;
+}
+
+/* Hover effect for sidebar buttons */
+.sidebar button {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.sidebar button:hover {
+  background-color: #e0d1f6;
+  transform: translateY(-1px);
+}
+
+/* Responsive Sidebar on Small Devices */
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    top: 56px; /* height of navbar */
+    left: 0;
+    width: 100%;
+    z-index: 10;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Center content text enhancements */
+.text-muted {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* Calendar Styling */
+.react-calendar {
+  width: 100%;
+  border: none;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  margin-bottom: 1rem;
+}
+
+.react-calendar__tile {
+  padding: 0.75rem 0.5rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.react-calendar__tile--active {
+  background-color: #6f42c1 !important;
+  color: white !important;
+  border-radius: 0.375rem;
+}
+
+.react-calendar__tile:enabled:hover {
+  background-color: #e0d1f6;
+  border-radius: 0.375rem;
+}
+
+/* Booked Date Styling */
+.bordered-booked-date {
+  border: 2px solid red;
+  border-radius: 6px;
+  position: relative;
+}
+
+.bordered-booked-date::after {
+  content: "Booked";
+  font-size: 0.6rem;
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  color: red;
+}
+
+/* Spinner alignment fix */
+button:disabled .spinner-border {
+  margin-right: 0.5rem;
+}
+
+/* Input & form control enhancements */
+.form-control,
+.form-check-input,
+textarea {
+  border-radius: 0.375rem;
+}
+
+/* Form wrapper shadow and padding */
+form.shadow-sm {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+  border: 1px solid #eaeaea;
+}
+
+/* Modal Custom Styling */
+.modal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal .modal-content {
+  background-color: white;
+  border-radius: 0.5rem;
+}
+
+.modal-header .btn-close {
+  outline: none;
+  box-shadow: none;
+}
+.react-time-picker__clock {
+  z-index: 1000 !important;
+  position: relative;
+}
+
+.react-clock {
+  z-index: 1000 !important;
+  position: absolute !important;
+}
+
