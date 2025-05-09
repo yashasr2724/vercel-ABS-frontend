@@ -23,7 +23,7 @@ const AdminBookingForm = () => {
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/booking/', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/booking/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBookings(res.data);
@@ -56,7 +56,7 @@ const AdminBookingForm = () => {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/booking/admin-book', {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/booking/admin-book`, {
         ...formData,
         sTime: formData.startTime,
         eTime: formData.endTime,
@@ -82,7 +82,7 @@ const AdminBookingForm = () => {
 
   const handleCancel = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/booking/admin-cancel/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/booking/admin-cancel/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage('✅ Booking cancelled.');

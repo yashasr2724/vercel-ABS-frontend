@@ -26,7 +26,7 @@ const AdminBookingRequests = () => {
   const fetchRequests = async (token) => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/booking/pending', {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/booking/pending`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRequests(res.data);
@@ -43,7 +43,7 @@ const AdminBookingRequests = () => {
       setActionLoadingId(id);
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/booking/${id}/status`,
+        `${process.env.REACT_APP_API_URL}/api/booking/${id}/status`,
         { status },
         {
           headers: { Authorization: `Bearer ${token}` },

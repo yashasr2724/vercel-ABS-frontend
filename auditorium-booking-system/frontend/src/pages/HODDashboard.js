@@ -57,7 +57,7 @@ const HODDashboard = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5000/api/user/update-profile', profile, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/api/user/update-profile`, profile, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert('Profile updated successfully!');

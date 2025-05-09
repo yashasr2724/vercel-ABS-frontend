@@ -16,7 +16,7 @@ const EditHOD = () => {
         const token = localStorage.getItem('token');
         if (!token) return setError('Token not found. Please login.');
 
-        const res = await axios.get('http://localhost:5000/api/auth/hods', {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/hods`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setHodList(res.data);
@@ -52,7 +52,7 @@ const EditHOD = () => {
       if (!token) return setError('Token missing. Please login again.');
 
       await axios.put(
-        `http://localhost:5000/api/auth/update-hod/${selectedHod._id}`,
+        `${process.env.REACT_APP_API_URL}/api/auth/update-hod/${selectedHod._id}`,
         form,
         { headers: { Authorization: `Bearer ${token}` } }
       );

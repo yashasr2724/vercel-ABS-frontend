@@ -27,10 +27,10 @@ const BookingCalendar = ({ darkMode }) => {
     const fetchData = async () => {
       const token = localStorage.getItem('token');
       try {
-        const dateRes = await axios.get('http://localhost:5000/api/booking/approved', {
+        const dateRes = await axios.get(`${process.env.REACT_APP_API_URL}/api/booking/approved`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        const timeSlotRes = await axios.get('http://localhost:5000/api/booking/approved-times', {
+        const timeSlotRes = await axios.get(`${process.env.REACT_APP_API_URL}/api/booking/approved-times`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

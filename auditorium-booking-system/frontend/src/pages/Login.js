@@ -15,7 +15,7 @@ const Login = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, form);
       const { token, role } = res.data;
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
@@ -30,7 +30,7 @@ const Login = () => {
   useEffect(() => {
     const checkUserExists = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/user/exists');
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/exists`);
         setShowRegister(!res.data.exists); // Show register only if no users exist
       } catch (err) {
         console.error('Error checking user existence:', err);

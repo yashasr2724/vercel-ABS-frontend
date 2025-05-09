@@ -42,7 +42,7 @@ const HODBookingForm = () => {
     const fetchBookedDates = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/booking/approved', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/booking/approved`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -66,7 +66,7 @@ const HODBookingForm = () => {
     const fetchTimeSlotsOnly = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/booking/approved-times', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/booking/approved-times`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -182,7 +182,7 @@ const HODBookingForm = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/booking', fullForm, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/booking`, fullForm, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

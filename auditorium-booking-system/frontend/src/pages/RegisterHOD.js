@@ -23,7 +23,7 @@ const RegisterHOD = () => {
     const fetchDepartments = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/departments', {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/departments`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDepartments(res.data);
@@ -58,7 +58,7 @@ const RegisterHOD = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.post(
-        'http://localhost:5000/api/departments',
+        `${process.env.REACT_APP_API_URL}/api/departments`,
         { name: newDept },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -88,7 +88,7 @@ const RegisterHOD = () => {
       const token = localStorage.getItem('token');
 
       await axios.post(
-        'http://localhost:5000/api/auth/register-hod',
+        `${process.env.REACT_APP_API_URL}/api/auth/register-hod`,
         { name, email, department, username, password },
         { headers: { Authorization: `Bearer ${token}` } }
       );

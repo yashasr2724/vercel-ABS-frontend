@@ -12,7 +12,7 @@ import {
 } from 'react-icons/fa';
 
 // Constants
-const BASE_URL = 'http://localhost:5000/api/booking';
+const BASE_URL = `${process.env.REACT_APP_API_URL}/api/booking`;
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -32,7 +32,6 @@ const AdminDashboard = () => {
   });
   
 
-  const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
 
 
   const [profile, setProfile] = useState({
@@ -59,7 +58,7 @@ const AdminDashboard = () => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const { data } = await axios.get('http://localhost:5000/api/user/profile', {
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile({
@@ -148,7 +147,7 @@ const AdminDashboard = () => {
       if (profile.password.trim()) payload.password = profile.password;
       if (profile.profilePic) payload.profilePic = profile.profilePic;
 
-      await axios.put('http://localhost:5000/api/user/update-profile', payload, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/api/user/update-profile`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

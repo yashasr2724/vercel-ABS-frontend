@@ -15,7 +15,7 @@ const ForgotPassword = () => {
     setError('');
     setMessage('');
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/forgot-password', { username });
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/forgot-password`, { username });
       setMessage(res.data.message);
 
       // Only move to OTP step if it's an admin
@@ -32,7 +32,7 @@ const ForgotPassword = () => {
     setError('');
     setMessage('');
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/admin-reset-password', {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/admin-reset-password`, {
         username,
         otp,
         newPassword,
