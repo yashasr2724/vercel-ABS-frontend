@@ -8,7 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './AdminDashboard.css';
 import {
   FaBars, FaMoon, FaSun, FaSignOutAlt, FaUserEdit,
-  FaPlus, FaEdit, FaInbox, FaHistory, FaCalendarAlt, FaDownload
+  FaPlus, FaEdit, FaInbox, FaHistory, FaCalendarAlt, FaDownload, FaBell
 } from 'react-icons/fa';
 
 // Constants
@@ -16,6 +16,12 @@ const BASE_URL = `${process.env.REACT_APP_API_URL}/api/booking`;
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const [hodPasswordRequests, setHodPasswordRequests] = useState([]);
+  const [departmentFilter, setDepartmentFilter] = useState('All');
+
+  const [pendingBookings, setPendingBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
   const [darkMode, setDarkMode] = useState(false);
@@ -32,6 +38,12 @@ const AdminDashboard = () => {
   });
   
 
+  const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
+
+  const getUniqueDepartments = () => {
+  const departments = recentBookings.map(b => b.requestedBy?.department || b.department || 'Unknown');
+  return ['All', ...Array.from(new Set(departments))];
+};
 
 
   const [profile, setProfile] = useState({
@@ -54,6 +66,29 @@ const AdminDashboard = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
+
+  const NotificationsDropdown = () => (
+  <div className="notification-dropdown animate__animated animate__fadeIn">
+    {pendingBookings.map((booking) => (
+      <div key={booking._id} className="notification-item">
+        📢 Booking request from <strong>{booking.requestedBy?.department || 'Unknown Dept'}</strong>
+      </div>
+    ))}
+
+    {hodPasswordRequests.map((request) => (
+      <div key={request._id} className="notification-item">
+        🔐 Password reset request from <strong>{request.name} ({request.department})</strong>
+      </div>
+    ))}
+
+    {pendingBookings.length === 0 && hodPasswordRequests.length === 0 && (
+      <div className="notification-item text-muted">No new notifications.</div>
+    )}
+  </div>
+);
+
+
+
 
   const fetchProfile = async () => {
     try {
@@ -109,14 +144,48 @@ const AdminDashboard = () => {
       console.error('Error fetching recent bookings:', error);
     }
   };
+  const fetchPendingBookings = async () => {
+    try {
+            
+      const token = localStorage.getItem('token');
+
+      const res = await axios.get(`${BASE_URL}/pending`, {
+        headers: { Authorization: `Bearer ${token}` }, // use your token logic
+      });
+      setPendingBookings(res.data);
+    } catch (err) {
+      console.error('Failed to fetch pending bookings:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
   
-  
+  const fetchHodPasswordRequests = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/hod-password-requests`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setHodPasswordRequests(data || []);
+  } catch (error) {
+    console.error('Failed to fetch HOD password requests:', error);
+  }
+};
+
 
   useEffect(() => {
+    
     fetchProfile();
     fetchMetrics();
     fetchRecentBookings();
     fetchPendingCount();
+    fetchPendingBookings();
+     const interval = setInterval(() => {
+    fetchPendingBookings();
+    fetchHodPasswordRequests();
+  }, 60000); // every 60 seconds
+
+  return () => {clearInterval(interval);}
   }, [filter, statusFilter, selectedMonth]);
 
   const goTo = (path) => navigate(path);
@@ -176,10 +245,15 @@ const AdminDashboard = () => {
   };
 
   const filteredBookings = recentBookings.filter((booking) => {
-    const bookingStatus = booking.status ? booking.status.toLowerCase() : '';
-    if (statusFilter === 'All') return true;
-    return bookingStatus === statusFilter.toLowerCase();
-  });
+  const bookingStatus = booking.status ? booking.status.toLowerCase() : '';
+  const dept = booking.requestedBy?.department || booking.department || 'Unknown';
+
+  const matchesStatus = statusFilter === 'All' || bookingStatus === statusFilter.toLowerCase();
+  const matchesDept = departmentFilter === 'All' || departmentFilter === dept;
+
+  return matchesStatus && matchesDept;
+});
+
 
   const downloadCSV = () => {
     const csvHeader = 'Event,Department,Start Time,End Time\n';
@@ -251,6 +325,8 @@ const AdminDashboard = () => {
     </div>
   );
 
+
+  
   return (
     <div className={`admin-container ${darkMode ? 'dark-mode' : ''}`}>
       <nav className="navbar admin-navbar d-flex justify-content-between align-items-center">
@@ -262,6 +338,17 @@ const AdminDashboard = () => {
           <h4 className="mb-0 text-white ms-2">Admin Dashboard</h4>
         </div>
         <div className="d-flex align-items-center gap-3">
+        <div className="position-relative" style={{ cursor: 'pointer' }}>
+  <FaBell size={22} color="white" onClick={() => setShowNotifications(prev => !prev)} />
+  {pendingBookings.length > 0 && (
+    <span className="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
+      {pendingBookings.length}
+    </span>
+  )}
+  {showNotifications && <NotificationsDropdown />}
+</div>
+
+
           <div className="position-relative" onClick={() => goTo('/booking-requests')} style={{ cursor: 'pointer' }}>
             <FaInbox size={22} color="white" />
             {pendingCount > 0 && (
@@ -317,9 +404,33 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+                    {!loading && (
+            <div className="mb-3">
+              <h4>Notifications</h4>
+              {pendingBookings.length > 0 ? (
+                <div className="notification-badge alert alert-warning">
+                  🔔 {pendingBookings.length} new booking request(s)
+                </div>
+              ) : (
+                <div className="text-muted">No new booking requests.</div>
+              )}
+            </div>
+          )}
+
+
           <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <h4>Recent Bookings</h4>
-            <div className="d-flex gap-2">
+            <div className="d-flex gap-2"> 
+              <select
+  value={departmentFilter}
+  className="form-select w-auto"
+  onChange={(e) => setDepartmentFilter(e.target.value)}
+>
+  {getUniqueDepartments().map((dept, idx) => (
+    <option key={idx} value={dept}>{dept}</option>
+  ))}
+</select>
+
             <input
   type="month"
   className="form-control w-auto"
@@ -345,20 +456,25 @@ const AdminDashboard = () => {
           <div className="table-responsive mb-2">
             <table className="table table-bordered table-striped">
               <thead className="table-secondary">
-                <tr><th>Event</th><th>Department</th><th>Start</th><th>End</th></tr>
+                <tr> <th>#</th><th>Event</th><th>Department</th><th>Start</th><th>End</th><th>Status</th> </tr>
               </thead>
               <tbody>
-                {filteredBookings.length > 0 ? filteredBookings.map((booking) => (
-                  <tr key={booking._id}>
-                    <td>{booking.eventName}</td>
-                    <td>{booking.requestedBy?.department || booking.department}</td>
-                    <td>{formatDate(booking.startTime)}</td>
-                    <td>{formatDate(booking.endTime)}</td>
-                  </tr>
-                )) : (
-                  <tr><td colSpan="4" className="text-center">No bookings found.</td></tr>
-                )}
-              </tbody>
+  {filteredBookings.length > 0 ? filteredBookings.map((booking, index) => (
+    <tr key={booking._id}>
+      <td>{index + 1}</td>
+      <td>{booking.eventName}</td>
+      <td>{booking.requestedBy?.department || booking.department}</td>
+      <td>{formatDate(booking.startTime)}</td>
+      <td>{formatDate(booking.endTime)}</td>
+       <td>{booking.status || 'Unknown'}</td> 
+    </tr>
+  )) : (
+    <tr>
+      <td colSpan="5" className="text-center">No bookings found.</td>
+    </tr>
+  )}
+</tbody>
+
             </table>
           </div>
 
