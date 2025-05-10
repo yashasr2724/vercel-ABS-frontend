@@ -1,3 +1,4 @@
+
 /* --- Theme Variables --- */
 :root {
   --primary-purple: #7d4cae;
@@ -10,6 +11,157 @@
   --text-light: #f8f9fa;
   --border: #c6d2de;
 }
+
+/* Dark Mode Overrides */
+body.dark-mode,
+.admin-container.dark-mode {
+  background-color: #121212;
+  color: #f8f9fa;
+}
+
+.admin-container.dark-mode,
+.admin-container.dark-mode .admin-layout,
+.admin-container.dark-mode .main-section,
+.admin-container.dark-mode .sidebar,
+.admin-container.dark-mode .admin-navbar {
+  background-color: #121212;
+  color: #f8f9fa;
+}
+
+.admin-container.dark-mode .admin-navbar {
+  background-color: var(--dark-purple);
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.15);
+}
+
+.admin-container.dark-mode .sidebar {
+  background-color: #2c1454;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.6);
+}
+
+.admin-container.dark-mode .main-section {
+  background-color: #1c1c1c;
+  box-shadow: inset 0 0 12px rgba(255,255,255,0.1);
+  border-radius: 16px 0 0 16px;
+}
+
+/* Dark mode text colors */
+.admin-container.dark-mode h4,
+.admin-container.dark-mode h5,
+.admin-container.dark-mode h2,
+.admin-container.dark-mode table,
+.admin-container.dark-mode select,
+.admin-container.dark-mode input,
+.admin-container.dark-mode button,
+.admin-container.dark-mode .card-body {
+  color: #f0eaff;
+}
+
+.admin-container.dark-mode .table {
+  background-color: #222222;
+  color: #f8f9fa;
+  border-color: #444;
+}
+
+.admin-container.dark-mode .table th,
+.admin-container.dark-mode .table td {
+  border-color: #444;
+}
+
+.admin-container.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+  background-color: #2c1547;
+}
+
+.admin-container.dark-mode .table-striped tbody tr:hover {
+  background-color: #4a1079;
+  color: #fff;
+}
+
+/* Dark mode buttons */
+.admin-container.dark-mode .btn-success {
+  background-color: #6f42c1;
+  border-color: #6f42c1;
+  color: #fff;
+}
+
+.admin-container.dark-mode .btn-success:hover {
+  background-color: var(--dark-purple);
+  border-color: var(--dark-purple);
+  color: #fff;
+}
+
+/* Dark mode profile dropdown */
+.admin-container.dark-mode .profile-dropdown,
+.admin-container.dark-mode .notification-dropdown {
+  background-color: #2e2e2e;
+  color: #ddd;
+  border-color: #555;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.8);
+}
+.admin-container.dark-mode .card {
+  background-color: #2c2c2c; /* Dark background for cards */
+  color: #f8f9fa; /* Light text color for cards */
+  border: 1px solid #444; /* Optional: border color for cards */
+}
+.admin-container.dark-mode .card:hover {
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.1); /* Adjust hover effect for dark mode */
+}
+/* Dark mode notification items */
+.admin-container.dark-mode .notification-item {
+  border-bottom: 1px solid #444;
+  color: #ddd;
+}
+
+.admin-container.dark-mode .notification-item:hover {
+  background-color: var(--dark-purple);
+  color: #fff;
+}
+
+/* Dark mode sidebar buttons */
+.admin-container.dark-mode .sidebar button {
+  color: #ddd;
+}
+
+.admin-container.dark-mode .sidebar button:hover {
+  background-color: var(--secondary-purple);
+  transform: translateX(6px);
+  color: #fff;
+}
+
+/* Dark mode form controls */
+.admin-container.dark-mode select.form-select,
+.admin-container.dark-mode input.form-control {
+  background-color: #321f6d;
+  color: #ddd;
+  border-color: #555;
+}
+
+.admin-container.dark-mode select.form-select:focus,
+.admin-container.dark-mode input.form-control:focus {
+  background-color: #3b2293;
+  color: #fff;
+  border-color: var(--primary-purple);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-purple);
+}
+
+/* Dark mode modal */
+.admin-container.dark-mode .modal-content {
+  background-color: #2c1547;
+  color: #ddd;
+  border-color: #555;
+}
+
+.admin-container.dark-mode .btn-close {
+  filter: invert(1);
+}
+
+/* Dark mode notifications badge */
+.admin-container.dark-mode .badge.bg-danger {
+  background-color: #bb86fc;
+  color: #121212;
+}
+
+
 
 /* Dark Mode Overrides */
 body.dark-mode {
@@ -25,6 +177,7 @@ body.dark-mode {
   background-color: var(--gray);
   color: var(--text-dark);
   transition: background 0.3s ease, color 0.3s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* --- Navbar --- */
@@ -36,13 +189,33 @@ body.dark-mode {
   z-index: 10;
   display: flex;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  justify-content: space-between;
+  transition: height 0.3s ease;
+  position: relative;
+}
+
+/* Navbar Left Section */
+.admin-navbar > .d-flex.align-items-center.gap-3 {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 /* Logo Image */
 .logo-img {
   height: 60px;
   width: auto;
+  border-radius: 6px;
+  user-select: none;
+}
+
+/* Navbar Title */
+.admin-navbar h4 {
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin: 0;
+  user-select: none;
 }
 
 /* Profile Image */
@@ -52,6 +225,13 @@ body.dark-mode {
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid var(--white);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+/* Profile Image hover scale */
+.profile-img:hover {
+  transform: scale(1.08);
 }
 
 /* --- Sidebar --- */
@@ -61,12 +241,17 @@ body.dark-mode {
   min-height: 100vh;
   padding: 1rem 0.75rem;
   transition: transform 0.3s ease, width 0.3s ease;
-  z-index: 9;
+  z-index: 50;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
+  position: relative;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
+/* Sidebar Buttons */
 .sidebar button {
   width: 100%;
   text-align: left;
@@ -74,39 +259,107 @@ body.dark-mode {
   color: var(--white);
   border: none;
   padding: 0.75rem 1rem;
-  font-weight: 500;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 1rem;
-  transition: background 0.2s ease, transform 0.2s ease;
-  border-radius: 6px;
+  font-size: 1.05rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  user-select: none;
 }
 
 .sidebar button:hover {
   background-color: var(--secondary-purple);
-  transform: translateX(4px);
+  transform: translateX(6px);
+  cursor: pointer;
 }
 
 .sidebar.collapsed {
   width: 60px;
+  overflow: hidden;
 }
 
-.sidebar.collapsed button span {
+/* Make the sidebar hidden offscreen at mobile when collapsed */
+@media (max-width: 760px) {
+  .sidebar {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    height: calc(100% - 80px);
+    width: 220px;
+    transform: translateX(0);
+    transition: transform 0.3s ease-in-out;
+    border-radius: 0 12px 12px 0;
+  }
+
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+  }
+}
+
+/* --- Sidebar Overlay for mobile when sidebar open --- */
+.sidebar-overlay {
   display: none;
+}
+
+@media (max-width: 760px) {
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 40;
+    display: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .sidebar-overlay.open {
+    display: block;
+  }
 }
 
 /* --- Main Layout --- */
 .admin-layout {
   display: flex;
   flex-direction: row;
+  height: calc(100vh - 80px);
+  overflow: hidden;
 }
 
+/* Main section */
 .main-section {
   flex: 1;
-  padding: 1.5rem;
-  overflow-x: auto;
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
   background-color: var(--gray);
+  position: relative;
+  border-radius: 16px 0 0 16px;
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.05);
+}
+
+/* Cards in dashboard */
+.card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+}
+
+/* Card body text */
+.card-body h5 {
+  font-weight: 600;
+  color: var(--secondary-purple);
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+}
+
+.card-body h2 {
+  font-weight: 700;
+  font-size: 2.5rem;
+  color: var(--dark-purple);
 }
 
 /* --- Profile Dropdown --- */
@@ -117,12 +370,14 @@ body.dark-mode {
   background: var(--white);
   color: var(--text-dark);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  min-width: 160px;
+  border-radius: 10px;
+  min-width: 180px;
   z-index: 20;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
   padding: 0.5rem 0;
   font-size: 1rem;
+  user-select: none;
+  overflow: hidden;
 }
 
 .profile-dropdown button {
@@ -131,14 +386,14 @@ body.dark-mode {
   background: none;
   border: none;
   padding: 0.75rem 1.25rem;
-  font-weight: 500;
+  font-weight: 600;
   color: inherit;
-  transition: background 0.2s ease;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
 }
 
 .profile-dropdown button:hover {
   background-color: #f1f1f1;
-  cursor: pointer;
 }
 
 .dark-mode .profile-dropdown {
@@ -151,59 +406,66 @@ body.dark-mode {
   background-color: #2c2c2c;
 }
 
-/* --- Responsive Mobile Sidebar --- */
-@media (max-width: 768px) {
-  .sidebar {
-    position: absolute;
-    top: 130px;
-    left: 0;
-    height: calc(100% - 80px);
-    transform: translateX(0);
-    width: 220px;
-    transition: transform 0.3s ease;
-  }
+/* --- Notification Dropdown --- */
+.notification-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 320px;
+  background: var(--white);
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  padding: 12px 0;
+  font-size: 14px;
+  user-select: none;
+  overflow-y: auto;
+  max-height: 280px;
+}
 
-  .sidebar.collapsed {
-    transform: translateX(-100%);
-  }
+.notification-item {
+  padding: 12px 20px;
+  border-bottom: 1px solid #eee;
+  color: #333;
+  cursor: default;
+  user-select: text;
+}
 
-  .admin-layout {
-    flex-direction: column;
-  }
+.notification-item:last-child {
+  border-bottom: none;
+}
 
-  .admin-navbar {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 1rem;
-    gap: 0.5rem;
-  }
-
-  .logo-img {
-    height: 50px;
-  }
-
-  .profile-img {
-    width: 40px;
-    height: 40px;
-  }
+.notification-item strong {
+  color: var(--secondary-purple);
+  font-weight: 700;
 }
 
 /* --- Table Styling --- */
 .table th,
 .table td {
   white-space: nowrap;
+  padding: 10px 12px;
+  vertical-align: middle;
 }
 
 .table thead {
   background-color: var(--light-purple);
   color: var(--dark-purple);
+  font-weight: 700;
+  font-size: 1rem;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
   background-color: #f9f5ff;
+  transition: background-color 0.3s ease;
 }
 
-/* Dark Mode Table */
+.table-striped tbody tr:hover {
+  background-color: #e2d5fa;
+  cursor: pointer;
+}
+
 .dark-mode .table {
   color: var(--text-light);
   background-color: #1c1c1c;
@@ -222,6 +484,11 @@ body.dark-mode {
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid #ccc;
+  transition: box-shadow 0.3s ease;
+}
+
+.profile-preview:hover {
+  box-shadow: 0 0 8px var(--primary-purple);
 }
 
 .edit-icon-overlay {
@@ -234,6 +501,7 @@ body.dark-mode {
   cursor: pointer;
   border: 1px solid #ccc;
   transition: background-color 0.2s ease;
+  user-select: none;
 }
 
 .edit-icon-overlay:hover {
@@ -250,39 +518,91 @@ body.dark-mode {
   background-color: var(--primary-purple);
   border-color: var(--primary-purple);
   color: var(--white);
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  user-select: none;
+  transition: background-color 0.3s ease;
+  width: auto;
+  max-width: 250px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .btn-success:hover {
   background-color: var(--dark-purple);
   border-color: var(--dark-purple);
+  cursor: pointer;
 }
 
 .btn-outline {
   border: 1px solid var(--primary-purple);
   color: var(--primary-purple);
+  font-weight: 600;
 }
 
 .btn-outline:hover {
   background-color: var(--primary-purple);
   color: var(--white);
-}
-.notification-dropdown {
-  position: absolute;
-  top: 40px;
-  right: 0;
-  width: 280px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  padding: 8px 0;
+  cursor: pointer;
 }
 
+/* Notification Bell and Dropdown Enhancements */
+
+/* Container positioning for bell icon and badge */
+.position-relative {
+  position: relative;
+}
+
+/* Notification badge */
+.badge.bg-danger {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.2em 0.45em;
+  line-height: 1;
+  top: 4px;
+  right: 0;
+  user-select: none;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+/* Slight scale effect on hover */
+.position-relative:hover .badge.bg-danger {
+  transform: scale(1.15);
+}
+
+/* Notification dropdown container */
+.notification-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 320px;
+  max-height: 320px;
+  overflow-y: auto;
+  background-color: var(--white);
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  color: var(--text-dark);
+  z-index: 1050;
+  padding: 8px 0;
+  font-size: 0.9rem;
+  user-select: none;
+  animation-duration: 0.35s;
+   min-width: 280px; /* Prevent shrinking too much */
+  max-width: 90vw;
+}
+
+/* Notification item styles */
 .notification-item {
   padding: 10px 16px;
   border-bottom: 1px solid #eee;
-  font-size: 14px;
+  cursor: default;
+  transition: background-color 0.2s ease;
   color: #333;
 }
 
@@ -291,5 +611,276 @@ body.dark-mode {
 }
 
 .notification-item strong {
-  color: #2c3e50;
+  color: var(--primary-purple);
+  font-weight: 700;
 }
+
+/* Highlight notification item on hover */
+.notification-item:hover {
+  background-color: var(--light-purple);
+  color: var(--dark-purple);
+}
+
+/* Dark mode styles */
+.dark-mode .notification-dropdown {
+  background-color: #2c2c2c;
+  border-color: #555;
+  color: var(--text-light);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+}
+
+.dark-mode .notification-item {
+  border-bottom: 1px solid #444;
+  color: var(--text-light);
+}
+
+.dark-mode .notification-item:hover {
+  background-color: #4a1079;
+  color: var(--white);
+}
+
+/* Responsive adjustments */
+
+
+
+/* --- Responsive Mobile Enhancements --- */
+@media (max-width: 760px) {
+  /* General container adjustments */
+  .admin-container {
+    padding: 0;
+  }
+  
+   
+  
+ .notification-dropdown {
+    right: 4 !important;  /* align dropdown's right edge to icon's right */
+    width: auto !important;
+    min-width: 260px !important;
+    max-width: 90vw !important;
+    max-height: 260px !important;
+    top: 48px !important;
+    font-size: 1rem !important;
+    box-sizing: border-box !important;
+    padding: 12px 16px !important;
+    transform: translateX(150px); /* slightly shift left a bit if needed */
+  }
+  
+  /* Ensure parent container for icon is relative */
+  
+  .badge.bg-danger {
+    font-size: 0.75rem;
+    top: 5px;
+    right: 2px;
+  }
+  .badge.bg-danger {
+    font-size: 0.75rem;
+    top: 5px;
+    right: 2px;
+  }
+
+  /* Navbar adjustments */
+  .admin-navbar {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .admin-navbar > .d-flex.align-items-center.gap-3 {
+    flex: 1 1 100%;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+
+  .admin-navbar h4 {
+    font-size: 1.75rem;
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  /* Logo smaller and centered */
+  .logo-img {
+    height: 48px;
+  }
+
+  /* Sidebar adjustments */
+  .sidebar {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    height: calc(100% - 80px);
+    width: 220px;
+    transform: translateX(0);
+    transition: transform 0.3s ease-in-out;
+    border-radius: 0 12px 12px 0;
+    box-shadow: 3px 0 10px rgba(0,0,0,0.25);
+    z-index: 50;
+    background-color: var(--dark-purple);
+    padding-top: 1rem;
+  }
+  
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+  }
+
+  /* Overlay behind sidebar when open */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 40;
+    display: none;
+  }
+  .sidebar-overlay.open {
+    display: block;
+  }
+
+  /* Main layout stacking */
+  .admin-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .main-section {
+    padding: 1rem 1rem 1.5rem 1rem;
+    margin-top: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* Cards stacked and full width */
+  .row.mb-4 {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .col-md-6.mb-3 {
+    flex: 1 1 100%;
+    margin-bottom: 0;
+  }
+
+  .card-body h2 {
+    font-size: 1.9rem;
+  }
+
+  /* Notification section */
+  .notification-badge {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Recent bookings filter controls */
+  .d-flex.justify-content-between.align-items-center.mb-3.flex-wrap.gap-2 {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .d-flex.justify-content-between.align-items-center.mb-3.flex-wrap.gap-2 h4 {
+    margin-bottom: 0;
+  }
+
+  .d-flex.justify-content-between.align-items-center.mb-3.flex-wrap.gap-2 > div {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+
+  /* Inputs and selects full width and bigger for tapping */
+  select.form-select,
+  input.form-control {
+    width: 100% !important;
+    font-size: 1rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+  }
+
+  /* Table responsiveness */
+  .table-responsive {
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.12);
+  }
+
+  .table {
+    min-width: 600px;
+    font-size: 0.95rem;
+  }
+
+  /* Table cells with padding */
+  .table th, .table td {
+    padding: 0.6rem 0.8rem;
+  }
+
+  /* Download button full width */
+  .btn-success {
+    width: 100%;
+    max-width: 100%;
+    font-size: 1.1rem;
+    padding: 0.75rem 0;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    justify-content: center;
+  }
+
+  /* Chart container height smaller on mobile */
+  .main-section > div[style] {
+    height: 220px !important;
+  }
+
+  /* Profile dropdown full width */
+  .profile-dropdown {
+    top: 54px;
+    right: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 1.1rem;
+  }
+
+  /* Notification dropdown full width */
+  .notification-dropdown {
+    width: 100%;
+    right: 0;
+    border-radius: 0;
+    box-shadow: none;
+    max-height: 220px;
+    font-size: 0.9rem;
+  }
+
+  .notification-item {
+    padding: 9px 16px;
+  }
+
+  /* Edit profile modal tweaks */
+  .modal-dialog {
+    max-width: 95%;
+    margin: 1rem auto;
+  }
+
+  .modal-content {
+    border-radius: 12px;
+  }
+
+  .profile-preview {
+    width: 80px;
+    height: 80px;
+  }
+
+  .edit-icon-overlay {
+    bottom: 6px;
+    right: 8px;
+  }
+
+  /* Navbar button (hamburger) for sidebar visible on mobile */
+  .admin-navbar .btn.text-white.d-md-none {
+    display: inline-block;
+  }
+}
+

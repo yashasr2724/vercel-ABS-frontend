@@ -12,7 +12,7 @@ import {
 } from 'react-icons/fa';
 
 // Constants
-const BASE_URL = `${process.env.REACT_APP_API_URL}/api/booking`;
+const BASE_URL = 'http://localhost:5000/api/booking';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -36,15 +36,13 @@ const AdminDashboard = () => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   });
-  
 
   const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
 
   const getUniqueDepartments = () => {
-  const departments = recentBookings.map(b => b.requestedBy?.department || b.department || 'Unknown');
-  return ['All', ...Array.from(new Set(departments))];
-};
-
+    const departments = recentBookings.map(b => b.requestedBy?.department || b.department || 'Unknown');
+    return ['All', ...Array.from(new Set(departments))];
+  };
 
   const [profile, setProfile] = useState({
     username: '',
@@ -68,32 +66,29 @@ const AdminDashboard = () => {
   };
 
   const NotificationsDropdown = () => (
-  <div className="notification-dropdown animate__animated animate__fadeIn">
-    {pendingBookings.map((booking) => (
-      <div key={booking._id} className="notification-item">
-        📢 Booking request from <strong>{booking.requestedBy?.department || 'Unknown Dept'}</strong>
-      </div>
-    ))}
+    <div className="notification-dropdown animate__animated animate__fadeIn">
+      {pendingBookings.map((booking) => (
+        <div key={booking._id} className="notification-item">
+          📢 Booking request from <strong>{booking.requestedBy?.department || 'Unknown Dept'}</strong>
+        </div>
+      ))}
 
-    {hodPasswordRequests.map((request) => (
-      <div key={request._id} className="notification-item">
-        🔐 Password reset request from <strong>{request.name} ({request.department})</strong>
-      </div>
-    ))}
+      {hodPasswordRequests.map((request) => (
+        <div key={request._id} className="notification-item">
+          🔐 Password reset request from <strong>{request.name} ({request.department})</strong>
+        </div>
+      ))}
 
-    {pendingBookings.length === 0 && hodPasswordRequests.length === 0 && (
-      <div className="notification-item text-muted">No new notifications.</div>
-    )}
-  </div>
-);
-
-
-
+      {pendingBookings.length === 0 && hodPasswordRequests.length === 0 && (
+        <div className="notification-item text-muted">No new notifications.</div>
+      )}
+    </div>
+  );
 
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/profile`, {
+      const { data } = await axios.get('http://localhost:5000/api/user/profile', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile({
@@ -107,7 +102,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchPendingCount = async () => {
+    const fetchPendingCount = async () => {
     try {
       const token = localStorage.getItem('token');
       const { data } = await axios.get(`${BASE_URL}/pending-count`, {
@@ -144,11 +139,10 @@ const AdminDashboard = () => {
       console.error('Error fetching recent bookings:', error);
     }
   };
+
   const fetchPendingBookings = async () => {
     try {
-            
       const token = localStorage.getItem('token');
-
       const res = await axios.get(`${BASE_URL}/pending`, {
         headers: { Authorization: `Bearer ${token}` }, // use your token logic
       });
@@ -161,31 +155,29 @@ const AdminDashboard = () => {
   };
   
   const fetchHodPasswordRequests = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/user/hod-password-requests`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setHodPasswordRequests(data || []);
-  } catch (error) {
-    console.error('Failed to fetch HOD password requests:', error);
-  }
-};
-
+    try {
+      const token = localStorage.getItem('token');
+      const { data } = await axios.get('http://localhost:5000/api/user/hod-password-requests', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setHodPasswordRequests(data || []);
+    } catch (error) {
+      console.error('Failed to fetch HOD password requests:', error);
+    }
+  };
 
   useEffect(() => {
-    
     fetchProfile();
     fetchMetrics();
     fetchRecentBookings();
     fetchPendingCount();
     fetchPendingBookings();
-     const interval = setInterval(() => {
-    fetchPendingBookings();
-    fetchHodPasswordRequests();
-  }, 60000); // every 60 seconds
+    const interval = setInterval(() => {
+      fetchPendingBookings();
+      fetchHodPasswordRequests();
+    }, 60000); // every 60 seconds
 
-  return () => {clearInterval(interval);}
+    return () => { clearInterval(interval); };
   }, [filter, statusFilter, selectedMonth]);
 
   const goTo = (path) => navigate(path);
@@ -216,7 +208,7 @@ const AdminDashboard = () => {
       if (profile.password.trim()) payload.password = profile.password;
       if (profile.profilePic) payload.profilePic = profile.profilePic;
 
-      await axios.put(`${process.env.REACT_APP_API_URL}/api/user/update-profile`, payload, {
+      await axios.put('http://localhost:5000/api/user/update-profile', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -245,15 +237,14 @@ const AdminDashboard = () => {
   };
 
   const filteredBookings = recentBookings.filter((booking) => {
-  const bookingStatus = booking.status ? booking.status.toLowerCase() : '';
-  const dept = booking.requestedBy?.department || booking.department || 'Unknown';
+    const bookingStatus = booking.status ? booking.status.toLowerCase() : '';
+    const dept = booking.requestedBy?.department || booking.department || 'Unknown';
 
-  const matchesStatus = statusFilter === 'All' || bookingStatus === statusFilter.toLowerCase();
-  const matchesDept = departmentFilter === 'All' || departmentFilter === dept;
+    const matchesStatus = statusFilter === 'All' || bookingStatus === statusFilter.toLowerCase();
+    const matchesDept = departmentFilter === 'All' || departmentFilter === dept;
 
-  return matchesStatus && matchesDept;
-});
-
+    return matchesStatus && matchesDept;
+  });
 
   const downloadCSV = () => {
     const csvHeader = 'Event,Department,Start Time,End Time\n';
@@ -325,8 +316,6 @@ const AdminDashboard = () => {
     </div>
   );
 
-
-  
   return (
     <div className={`admin-container ${darkMode ? 'dark-mode' : ''}`}>
       <nav className="navbar admin-navbar d-flex justify-content-between align-items-center">
@@ -338,16 +327,15 @@ const AdminDashboard = () => {
           <h4 className="mb-0 text-white ms-2">Admin Dashboard</h4>
         </div>
         <div className="d-flex align-items-center gap-3">
-        <div className="position-relative" style={{ cursor: 'pointer' }}>
-  <FaBell size={22} color="white" onClick={() => setShowNotifications(prev => !prev)} />
-  {pendingBookings.length > 0 && (
-    <span className="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
-      {pendingBookings.length}
-    </span>
-  )}
-  {showNotifications && <NotificationsDropdown />}
-</div>
-
+          <div className="position-relative" style={{ cursor: 'pointer' }}>
+            <FaBell size={22} color="white" onClick={() => setShowNotifications(prev => !prev)} />
+            {pendingBookings.length > 0 && (
+              <span className="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
+                {pendingBookings.length}
+              </span>
+            )}
+            {showNotifications && <NotificationsDropdown />}
+          </div>
 
           <div className="position-relative" onClick={() => goTo('/booking-requests')} style={{ cursor: 'pointer' }}>
             <FaInbox size={22} color="white" />
@@ -404,7 +392,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-                    {!loading && (
+          {!loading && (
             <div className="mb-3">
               <h4>Notifications</h4>
               {pendingBookings.length > 0 ? (
@@ -417,27 +405,25 @@ const AdminDashboard = () => {
             </div>
           )}
 
-
           <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <h4>Recent Bookings</h4>
             <div className="d-flex gap-2"> 
               <select
-  value={departmentFilter}
-  className="form-select w-auto"
-  onChange={(e) => setDepartmentFilter(e.target.value)}
->
-  {getUniqueDepartments().map((dept, idx) => (
-    <option key={idx} value={dept}>{dept}</option>
-  ))}
-</select>
+                value={departmentFilter}
+                className="form-select w-auto"
+                onChange={(e) => setDepartmentFilter(e.target.value)}
+              >
+                {getUniqueDepartments().map((dept, idx) => (
+                  <option key={idx} value={dept}>{dept}</option>
+                ))}
+              </select>
 
-            <input
-  type="month"
-  className="form-control w-auto"
-  value={selectedMonth}
-  onChange={(e) => setSelectedMonth(e.target.value)}
-/>
-
+              <input
+                type="month"
+                className="form-control w-auto"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+              />
 
               <select value={filter} className="form-select w-auto" onChange={(e) => setFilter(e.target.value)}>
                 <option value="7">Last 7 Days</option>
@@ -459,22 +445,21 @@ const AdminDashboard = () => {
                 <tr> <th>#</th><th>Event</th><th>Department</th><th>Start</th><th>End</th><th>Status</th> </tr>
               </thead>
               <tbody>
-  {filteredBookings.length > 0 ? filteredBookings.map((booking, index) => (
-    <tr key={booking._id}>
-      <td>{index + 1}</td>
-      <td>{booking.eventName}</td>
-      <td>{booking.requestedBy?.department || booking.department}</td>
-      <td>{formatDate(booking.startTime)}</td>
-      <td>{formatDate(booking.endTime)}</td>
-       <td>{booking.status || 'Unknown'}</td> 
-    </tr>
-  )) : (
-    <tr>
-      <td colSpan="5" className="text-center">No bookings found.</td>
-    </tr>
-  )}
-</tbody>
-
+                {filteredBookings.length > 0 ? filteredBookings.map((booking, index) => (
+                  <tr key={booking._id}>
+                    <td>{index + 1}</td>
+                    <td>{booking.eventName}</td>
+                    <td>{booking.requestedBy?.department || booking.department}</td>
+                    <td>{formatDate(booking.startTime)}</td>
+                    <td>{formatDate(booking.endTime)}</td>
+                    <td>{booking.status || 'Unknown'}</td> 
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan="6" className="text-center">No bookings found.</td>
+                  </tr>
+                )}
+              </tbody>
             </table>
           </div>
 
