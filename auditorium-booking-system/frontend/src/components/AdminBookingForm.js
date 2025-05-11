@@ -2,270 +2,514 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import './calendarStyles.css';
-import { format, isValid } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 const AdminBookingForm = () => {
   const [formData, setFormData] = useState({
     eventName: '',
     eventType: '',
-    startTime: '',
-    endTime: '',
+    otherEventType: '',
     comments: ''
   });
 
-  const [bookings, setBookings] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [modalData, setModalData] = useState([]);
+  const [date, setDate] = useState(new Date());
+  const [startHour, setStartHour] = useState('');
+  const [endHour, setEndHour] = useState('');
+  const [adminBookedDates, setAdminBookedDates] = useState([]);
+  const [hodBookedDates, setHodBookedDates] = useState([]);
+  const [timeSlotsMap, setTimeSlotsMap] = useState({});
+  const [modalInfo, setModalInfo] = useState({ show: false, bookedSlots: [], date: null });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const token = localStorage.getItem('token');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const navigate = useNavigate();
 
-  const fetchBookings = async () => {
-    try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/booking/`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setBookings(res.data);
-    } catch (err) {
-      console.error('Booking Fetch Error:', err);
-    }
+  const getDateKey = (date) => {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+    d.setHours(0, 0, 0, 0);
+    return d.toISOString().split('T')[0];
   };
 
   useEffect(() => {
-    fetchBookings();
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(isDark);
+
+    const fetchBookedDates = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5000/api/booking', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const adminDates = [];
+        const hodDates = [];
+
+        response.data.forEach(b => {
+          const d = new Date(b.date || b.startTime || b.sTime);
+          if (isNaN(d.getTime())) return;
+          const dayDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+          if (b.bookedByAdmin) {
+            if (!adminDates.some(dt => dt.getTime() === dayDate.getTime())) {
+              adminDates.push(dayDate);
+            }
+          } else {
+            if (!hodDates.some(dt => dt.getTime() === dayDate.getTime())) {
+              hodDates.push(dayDate);
+            }
+          }
+        });
+
+        setAdminBookedDates(adminDates);
+        setHodBookedDates(hodDates);
+      } catch (err) {
+        console.error('Error fetching booked dates:', err);
+      }
+    };
+
+    const fetchTimeSlotsOnly = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5000/api/booking', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const slotMap = {};
+
+        response.data.forEach((item) => {
+          if (!item.startTime && !item.sTime) return;
+          const startDateStr = item.startTime || item.sTime;
+          const endDateStr = item.endTime || item.eTime;
+          const dateKey = getDateKey(startDateStr);
+          if (!dateKey) return;
+          if (!slotMap[dateKey]) slotMap[dateKey] = [];
+
+          slotMap[dateKey].push({
+            time: `${item.sTime || new Date(item.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${item.eTime || new Date(item.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
+            department: item.department?.name || item.department || (item.bookedByAdmin ? 'Admin' : 'HOD'),
+            eventName: item.eventName || 'Unknown',
+            _id: item._id,
+            bookedByAdmin: item.bookedByAdmin
+          });
+        });
+
+        setTimeSlotsMap(slotMap);
+      } catch (err) {
+        console.error('❌ Error fetching time slots only:', err);
+      }
+    };
+
+    fetchBookedDates();
+    fetchTimeSlotsOnly();
   }, []);
 
-  useEffect(() => {
-    console.log('Bookings:', bookings);
-  }, [bookings]);
+  const isSameDay = (d1, d2) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
+
+  const handleDateClick = (clickedDate) => {
+    const key = getDateKey(clickedDate);
+    const bookedSlots = timeSlotsMap[key] || [];
+
+    setModalInfo({
+      show: true,
+      bookedSlots,
+      date: clickedDate
+    });
+  };
+
+  const tileClassName = ({ date, view }) => {
+    if (view !== 'month') return null;
+
+    if (adminBookedDates.some(d => isSameDay(d, date))) {
+      return 'admin-booked-date-border';
+    }
+    if (hodBookedDates.some(d => isSameDay(d, date))) {
+      return 'hod-booked-date-border';
+    }
+    return null;
+  };
+
+  const formatDateTime = (date, timeStr) => {
+    const [hour, minute] = timeStr.split(':');
+    const newDate = new Date(date);
+    newDate.setHours(parseInt(hour), parseInt(minute), 0, 0);
+    return newDate.toISOString();
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const parseTimeToMinutes = (timeStr) => {
+    if (!timeStr) return null;
+    const parts = timeStr.split(':');
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+  };
+
+  const isTimeSlotAvailable = () => {
+    const dayKey = getDateKey(date);
+    const bookingsForDay = timeSlotsMap[dayKey] || [];
+
+    const start = parseTimeToMinutes(startHour);
+    const end = parseTimeToMinutes(endHour);
+    if (start === null || end === null) return false;
+
+    for (const slot of bookingsForDay) {
+      const [slotStartStr, slotEndStr] = slot.time.split(' - ').map(t => t.trim());
+      const slotStart = parseTimeToMinutes(slotStartStr);
+      const slotEnd = parseTimeToMinutes(slotEndStr);
+
+      if (!(end <= slotStart || start >= slotEnd)) {
+        return false; // overlap found
+      }
+    }
+    return true; // no overlap
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setMessage('');
+    setError('');
+    setIsSubmitting(true);
 
-    if (new Date(formData.startTime) >= new Date(formData.endTime)) {
-      setError('Start time must be before end time.');
+    if (!startHour || !endHour) {
+      setError('Please select both start and end time.');
+      setIsSubmitting(false);
       return;
     }
 
+    const earliestTime = "09:00";
+    const latestTime = "16:30";
+
+    if (startHour < earliestTime || endHour > latestTime) {
+      setError('Bookings can only be made between 9:00 AM and 4:30 PM.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (startHour >= endHour) {
+      setError('Start time must be before end time.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!isTimeSlotAvailable()) {
+      setError('Selected time slot is already taken.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    const startTime = formatDateTime(date, startHour);
+    const endTime = formatDateTime(date, endHour);
+
+    const fullForm = {
+      ...formData,
+      eventType: formData.eventType === 'Other' ? formData.otherEventType : formData.eventType,
+      startTime,
+      endTime,
+      sTime: startHour,
+      eTime: endHour,
+      date: getDateKey(date),
+      bookedByAdmin: true,
+    };
+
     try {
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/booking/admin-book`, {
-        ...formData,
-        sTime: formData.startTime,
-        eTime: formData.endTime,
-        bookedByAdmin: true
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/api/booking/admin-book', fullForm, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
 
-      setMessage('✅ Auditorium booked successfully!');
+      setMessage('🎉 Booking successfully created!');
       setFormData({
         eventName: '',
         eventType: '',
-        startTime: '',
-        endTime: '',
+        otherEventType: '',
         comments: ''
       });
-      fetchBookings();
-    } catch (err) {
-      console.error('Booking Error:', err);
-      setError(err.response?.data?.message || 'Booking failed.');
+      setStartHour('');
+      setEndHour('');
+      setDate(new Date());
+
+      await refreshBookingData();
+
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Booking failed or time slot already taken.';
+      setError(msg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleCancel = async (id) => {
+  const refreshBookingData = async () => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/booking/admin-cancel/${id}`, {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:5000/api/booking', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setMessage('✅ Booking cancelled.');
-      fetchBookings();
+
+      const bookings = response.data;
+      const adminDates = [];
+      const hodDates = [];
+      const slotMap = {};
+
+      bookings.forEach(b => {
+        const d = new Date(b.date || b.startTime || b.sTime);
+        if (isNaN(d.getTime())) return;
+        const dayDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+        if (b.bookedByAdmin) {
+          if (!adminDates.some(dt => dt.getTime() === dayDate.getTime())) {
+            adminDates.push(dayDate);
+          }
+        } else {
+          if (!hodDates.some(dt => dt.getTime() === dayDate.getTime())) {
+            hodDates.push(dayDate);
+          }
+        }
+
+        const dateKey = getDateKey(b.date || b.startTime || b.sTime);
+        if (!slotMap[dateKey]) slotMap[dateKey] = [];
+
+        slotMap[dateKey].push({
+          time: `${b.sTime || new Date(b.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${b.eTime || new Date(b.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`,
+          department: b.department?.name || b.department || (b.bookedByAdmin ? 'Admin' : 'HOD'),
+          eventName: b.eventName || 'Unknown',
+          _id: b._id,
+          bookedByAdmin: b.bookedByAdmin
+        });
+      });
+
+      setAdminBookedDates(adminDates);
+      setHodBookedDates(hodDates);
+      setTimeSlotsMap(slotMap);
+
     } catch (err) {
-      setError('❌ Cancel failed.');
+      console.error('Error refreshing booking data:', err);
     }
   };
 
-  const tileClassName = ({ date }) => {
-    const formatted = format(date, 'yyyy-MM-dd');
-    const todayBookings = bookings.filter(b => {
-      const bDate = new Date(b.sTime);
-      return isValid(bDate) && format(bDate, 'yyyy-MM-dd') === formatted;
-    });
+  const handleCancel = async (bookingId) => {
+    setMessage('');
+    setError('');
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:5000/api/booking/admin-cancel/${bookingId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      setMessage('✅ Booking cancelled successfully.');
 
-    const classes = [];
-    if (todayBookings.some(b => b.bookedByAdmin)) {
-      classes.push('admin-booked');
+      await refreshBookingData();
+
+      setModalInfo({ show: false, bookedSlots: [], date: null });
+    } catch (err) {
+      setError('Failed to cancel booking.');
     }
-    if (todayBookings.some(b => !b.bookedByAdmin)) {
-      classes.push('hod-booked');
-    }
-    return classes;
-  };
-
-  const handleDateClick = (date) => {
-    const selected = format(date, 'yyyy-MM-dd');
-    const filtered = bookings.filter(b => {
-      const bDate = new Date(b.sTime);
-      return isValid(bDate) && format(bDate, 'yyyy-MM-dd') === selected;
-    });
-
-    setSelectedDate(date);
-    setModalData(filtered);
-  };
-
-  const closeModal = () => {
-    setSelectedDate(null);
-    setModalData([]);
   };
 
   return (
-    <div className="container mt-4">
-      <style>
-        {`
-          .admin-booked {
-            border: 2px solid red !important;
-            border-radius: 5px;
-          }
-          .hod-booked {
-            border: 2px solid orange !important;
-            background-color: #FFB34733 !important;
-            border-radius: 5px;
-          }
-        `}
-      </style>
+    <div className={`container mt-5 mb-5 ${darkMode ? 'dark-mode' : ''}`} style={{ maxWidth: 600 }}>
+      <button onClick={() => navigate(-1)} className="btn btn-link text-purple mb-3">&larr; Back</button>
 
-      <div className="card shadow">
-        <div className="card-header bg-primary text-white text-center">
-          <h4>Admin Auditorium Booking</h4>
-        </div>
-        <div className="card-body">
-          <form onSubmit={handleSubmit} className="row g-3">
-            <div className="col-md-6">
-              <input
-                name="eventName"
-                placeholder="Event Name"
-                value={formData.eventName}
-                onChange={handleChange}
-                className="form-control"
-                required
-              />
-            </div>
-            <div className="col-md-6">
-              <input
-                name="eventType"
-                placeholder="Event Type"
-                value={formData.eventType}
-                onChange={handleChange}
-                className="form-control"
-                required
-              />
-            </div>
-            <div className="col-md-6">
-              <input
-                type="datetime-local"
-                name="startTime"
-                value={formData.startTime}
-                onChange={handleChange}
-                className="form-control"
-                required
-              />
-            </div>
-            <div className="col-md-6">
-              <input
-                type="datetime-local"
-                name="endTime"
-                value={formData.endTime}
-                onChange={handleChange}
-                className="form-control"
-                required
-              />
-            </div>
-            <div className="col-12">
-              <textarea
-                name="comments"
-                placeholder="Comments (optional)"
-                value={formData.comments}
-                onChange={handleChange}
-                className="form-control"
-              />
-            </div>
-            <div className="col-12 text-center">
-              <button type="submit" className="btn btn-primary px-4">✅ Book</button>
-            </div>
-            {message && <p className="text-success text-center mt-2">{message}</p>}
-            {error && <p className="text-danger text-center mt-2">{error}</p>}
-          </form>
-        </div>
-      </div>
+      <h2 className="text-center text-purple mb-4 fw-bold">🎯 Admin Auditorium Booking</h2>
 
-      <div className="mt-5">
-        <h5 className="text-primary">📅 Booked Dates</h5>
-        <Calendar
-          onClickDay={handleDateClick}
-          tileClassName={tileClassName}
-        />
-        <div className="mt-3 d-flex gap-3">
-          <div className="d-flex align-items-center">
-            <div style={{ width: 15, height: 15, backgroundColor: 'red', marginRight: 5 }}></div>
-            <span>Admin</span>
+      <form onSubmit={handleSubmit} className={`p-4 rounded shadow-sm ${darkMode ? 'bg-dark text-white' : 'bg-light'}`}>
+        <div className="mb-3">
+          <label htmlFor="eventName" className="form-label">Event Name</label>
+          <input
+            type="text"
+            id="eventName"
+            name="eventName"
+            className="form-control"
+            value={formData.eventName}
+            onChange={handleChange}
+            required
+            placeholder="Enter event name"
+          />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="eventType" className="form-label">Event Type</label>
+          <select
+            id="eventType"
+            name="eventType"
+            className="form-select"
+            value={formData.eventType}
+            onChange={(e) => {
+              const value = e.target.value;
+              setFormData(prev => ({
+                ...prev,
+                eventType: value,
+                otherEventType: value === 'Other' ? prev.otherEventType || '' : ''
+              }))
+            }}
+            required
+          >
+            <option value="">-- Select Event Type --</option>
+            <option value="Academic">Academic</option>
+            <option value="Non-Academic">Non-Academic</option>
+            <option value="Curriculum">Curriculum</option>
+            <option value="Non-Curriculum">Non-Curriculum</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        
+        {formData.eventType === 'Other' && (
+          <div className="mb-3">
+            <label htmlFor="otherEventType" className="form-label">Please specify</label>
+            <textarea
+              id="otherEventType"
+              name="otherEventType"
+              className="form-control"
+              value={formData.otherEventType || ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, otherEventType: e.target.value }))}
+              required
+              placeholder="the event type"
+            />
           </div>
-          <div className="d-flex align-items-center">
-            <div style={{ width: 15, height: 15, backgroundColor: 'orange', marginRight: 5 }}></div>
-            <span>HOD</span>
-          </div>
-        </div>
-      </div>
+        )}
 
-      {selectedDate && (
-        <div
-          className="modal fade show d-block"
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-          onClick={closeModal}
+        <div className="mb-3">
+          <label className="form-label">Select Date</label>
+          <Calendar
+            onClickDay={(value) => {
+              setDate(value);
+              if (adminBookedDates.some(d => isSameDay(d, value)) || hodBookedDates.some(d => isSameDay(d, value))) {
+                handleDateClick(value);
+              }
+            }}
+            value={date}
+            minDate={new Date()}
+            tileClassName={tileClassName}
+          />
+        </div>
+
+        <div className="mb-3 d-flex gap-3">
+          {['Start Time', 'End Time'].map((label, idx) => (
+            <div className="flex-fill" key={label}>
+              <label className="form-label">{label}</label>
+              <input
+                type="time"
+                className="form-control"
+                value={idx === 0 ? startHour : endHour}
+                onChange={(e) => idx === 0 ? setStartHour(e.target.value) : setEndHour(e.target.value)}
+                required
+                min="09:00"
+                max="16:30"
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="comments" className="form-label">Additional Comments</label>
+          <textarea
+            id="comments"
+            name="comments"
+            className="form-control"
+            value={formData.comments}
+            onChange={handleChange}
+            placeholder="Any extra requirements or notes"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="btn btn-purple w-100"
+          disabled={isSubmitting}
         >
-          <div className="modal-dialog" onClick={e => e.stopPropagation()}>
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Bookings on {format(selectedDate, 'PPP')}</h5>
-                <button className="btn-close" onClick={closeModal}></button>
-              </div>
-              <div className="modal-body">
-                {modalData.length === 0 ? (
-                  <p>No bookings for this date.</p>
-                ) : (
-                  <ul className="list-group">
-                    {modalData.map(b => (
-                      <li key={b._id} className="list-group-item">
-                        <strong>{b.eventName}</strong> ({b.eventType})<br />
-                        <small>
-                          {new Date(b.sTime).toLocaleString()} – {new Date(b.eTime).toLocaleString()}
-                        </small><br />
-                        {!b.bookedByAdmin && b.department && (
-                          <small>Department: <strong>{b.department}</strong></small>
-                        )}
-                        {b.bookedByAdmin && (
-                          <button
-                            className="btn btn-sm btn-outline-danger mt-2"
-                            onClick={() => handleCancel(b._id)}
-                          >
-                            ❌ Cancel
-                          </button>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
+          {isSubmitting ? 'Booking...' : '🚀 Book Now'}
+        </button>
+
+        {message && <div className="alert alert-success mt-3">{message}</div>}
+        {error && <div className="alert alert-danger mt-3">{error}</div>}
+      </form>
+
+      <ModalShow
+        show={modalInfo.show}
+        bookedSlots={modalInfo.bookedSlots}
+        date={modalInfo.date}
+        onClose={() => setModalInfo({ ...modalInfo, show: false })}
+        onCancel={handleCancel}
+      />
+
+      <style>{`
+        .text-purple { color: #6f42c1; }
+        .btn-purple { background-color: #6f42c1; color: white; }
+        .btn-purple:hover { background-color: #59309c; }
+        .react-calendar { width: 100%; border: none; background-color: transparent; }
+        .admin-booked-date-border { border: 2px solid #6f42c1 !important; border-radius: 8px; }
+        .hod-booked-date-border { border: 2px solid red !important; border-radius: 8px; }
+        .dark-mode { background-color: #121212; color: #f1f1f1; }
+        .dark-mode .form-control, .dark-mode textarea {
+          background-color: #1e1e1e;
+          color: white;
+          border: 1px solid #444;
+        }
+        .dark-mode .form-check-label { color: white; }
+        .dark-mode .react-calendar { background-color: #1e1e1e; color: white; }
+      `}</style>
+    </div>
+  );
+};
+
+const ModalShow = ({ show, bookedSlots, date, onClose, onCancel }) => {
+  if (!show) return null;
+
+  return (
+    <div className="modal show d-block" tabIndex="-1" onClick={onClose} style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
+      <div className="modal-dialog" onClick={e => e.stopPropagation()}>
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">Booked Time Slots</h5>
+            <button type="button" className="btn-close" onClick={onClose}></button>
+          </div>
+          <div className="modal-body">
+            {date && (
+              <p className="text-muted mb-2">
+                Date: {date.toLocaleDateString('en-IN', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </p>
+            )}
+            {bookedSlots.length > 0 ? (
+              <ul>
+                {bookedSlots.map((slot, i) => (
+                  <li key={slot._id || i} className="mb-2">
+                    <strong>{slot.time}</strong><br />
+                    <small>Dept: {slot.department}</small><br />
+                    <small>Event: {slot.eventName}</small><br />
+                    {slot.bookedByAdmin && (
+                      <button
+                        className="btn btn-sm btn-outline-danger mt-1"
+                        onClick={() => onCancel(slot._id)}
+                      >
+                        ❌ Cancel Booking
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No bookings for this date.</p>
+            )}
+          </div>
+          <div className="modal-footer">
+            <button className="btn btn-secondary" onClick={onClose}>Close</button>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
