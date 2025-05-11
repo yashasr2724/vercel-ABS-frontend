@@ -39,7 +39,7 @@ const AdminBookingForm = () => {
     const fetchBookedDates = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/booking', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/booking`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -72,7 +72,7 @@ const AdminBookingForm = () => {
     const fetchTimeSlotsOnly = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/booking', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/booking`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -219,7 +219,7 @@ const AdminBookingForm = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/booking/admin-book', fullForm, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/booking/admin-book`, fullForm, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -250,7 +250,7 @@ const AdminBookingForm = () => {
   const refreshBookingData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/booking', {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/booking`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -300,7 +300,7 @@ const AdminBookingForm = () => {
     setError('');
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/booking/admin-cancel/${bookingId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/booking/admin-cancel/${bookingId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
